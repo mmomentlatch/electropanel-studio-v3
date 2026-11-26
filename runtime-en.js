@@ -2080,24 +2080,7 @@
     }
     if (project.riserLeadM != null && (!Number.isFinite(project.riserLeadM) || project.riserLeadM < 0 || project.riserLeadM > 300)) throw new Error("Check the feeder length to the riser");
     if (project.wireEndAllowanceMm != null && (!Number.isInteger(project.wireEndAllowanceMm) || project.wireEndAllowanceMm < 0 || project.wireEndAllowanceMm > 1000)) delete project.wireEndAllowanceMm;
-    normalizeBackup(project);
     return project;
-  }
-
-  function normalizeBackup(project) {
-    const saved = project.backup;
-    if (!saved || typeof saved !== "object") { delete project.backup; return; }
-    const branchIds = new Set(project.devices.filter((device) => /^(mcb-|rcbo)/.test(device.type)).map((device) => device.id));
-    const validIds = (list) => [...new Set(Array.isArray(list) ? list.filter((id) => branchIds.has(id)) : [])];
-    const circuits = validIds(saved.circuits), custom = validIds(saved.custom).filter((id) => circuits.includes(id));
-    const loads = F.buildingPlans(project).flatMap((floor) => floor.points).flatMap((point) => {
-      if (!saved.loads || !Object.hasOwn(saved.loads, point.id)) return [];
-      const load = saved.loads[point.id];
-      if (!load || typeof load !== "object") return [];
-      return [[point.id, { on: load.on === true, kw: Number.isFinite(load.kw) && load.kw >= 0 && load.kw <= 1000 ? load.kw : null }]];
-    });
-    if (!Number.isFinite(saved.capacityKw) || saved.capacityKw <= 0 || saved.capacityKw > 1000) { delete project.backup; return; }
-    project.backup = { capacityKw: saved.capacityKw, source: ["station", "generator", "inverter"].includes(saved.source) ? saved.source : "station", circuits, custom, loads: Object.fromEntries(loads) };
   }
 
   function positiveOrNull(value) {
@@ -2467,10 +2450,6 @@
       level.circuits.forEach((circuit) => { const previous = circuit.id; circuit.id = makeId(); ids.set(previous, circuit.id); });
       level.excludedCircuitIds = level.excludedCircuitIds.map((value) => ids.get(value) || value);
       level.points.forEach((point) => { if (point.circuitId) point.circuitId = ids.get(point.circuitId) || point.circuitId; });
-    }
-    if (copy.backup) {
-      copy.backup.circuits = copy.backup.circuits.map((id) => ids.get(id));
-      copy.backup.custom = copy.backup.custom.map((id) => ids.get(id));
     }
     if (copy.design) {
       if (Array.isArray(copy.design.circuits)) copy.design.circuits.forEach((circuit) => {
@@ -3404,32 +3383,7 @@
       return {pitch:b.pitchMm,modules:project.board.modulesPerRow,items:items.sort((a,b)=>a.slot-b.slot)};
     });
   }
-  function backup(project, settings) {
-    const capacity=Number(settings?.capacityKw), ids=new Set(settings?.circuits||[]);
-    const custom=new Set(settings?.custom||[]), activePoints=new Set();
-    const loads=[project.floorPlan,...(project.otherFloors||[])].filter(Boolean).flatMap(plan=>plan.points);
-    const branches=project.devices.filter(d=>ids.has(d.id)&&/^(mcb-|rcbo)/.test(d.type));
-    let kw=0, known=branches.length>0;
-    function count(value) {
-      if(value==null||value===""||!Number.isFinite(Number(value))||Number(value)<0) known=false;
-      else kw+=Number(value);
-    }
-    for(const device of branches) {
-      if(!custom.has(device.id)) count(device.load);
-      for(const point of loads.filter(p=>p.circuitId===device.id)) {
-        const appliance=["socket","light","equipment"].includes(point.type);
-        if(custom.has(device.id)&&appliance) {
-          const load=settings.loads?.[point.id];
-          if(!load?.on) continue;
-          count(load.kw);
-        }
-        activePoints.add(point.id);
-      }
-    }
-    const state=!(capacity>0)||!known?"unknown":kw>capacity+1e-9?"overload":"available";
-    return {kw,capacity,state,ids:new Set(branches.map(d=>d.id)),activePoints};
-  }
-  return {esc,layout,wirePath,lengths,origins,catalogue,materials,labelStrips,backup};
+  return {esc,layout,wirePath,lengths,origins,catalogue,materials,labelStrips};
 });
 
 ;
@@ -7447,7 +7401,7 @@ function initKit() {
 
 ;
 /* workspace-tools.js */
-let starterIntent="board", outageFor=null, tracedDevice=null, traceProject=null;
+let starterIntent="board", tracedDevice=null, traceProject=null;
 function levelName(plan){return plan.levelName||"Main level";}
 function changeLevel(id) {
   if((project.floorPlan?.levelId||"main")===id)return true;
@@ -7466,7 +7420,7 @@ function renderLevels(){
   const level=project.floorPlan;
   const total=$("#buildingSummary");total.hidden=plans.length<2;
   if(!total.hidden){const report=F.buildingReport(project);const riser=report.circuits.reduce((sum,c)=>sum+(c.riserM||0),0);total.textContent=`${"Whole building"} · ${report.circuits.some(c=>c.incomplete)?"≥ ":""}${floorNumber(report.totalPurchaseM)} m · ${"Cable in riser"} ${floorNumber(riser)} m`;}
-  $("#storeySummary").textContent=`${levelName(level)} · ${level.elevationM||0} m`;
+  $("#storeySummary").textContent=`${"Level elevation"} · ${floorNumber(level.elevationM||0)} m`;
   $("#storeyElevation").value=Math.max(...plans.map(p=>p.elevationM||0))+3;
 }
 function tracePointInfo(){
@@ -7484,7 +7438,7 @@ function deviceWorkInfo(){
   if(!d){box.replaceChildren();return;}
   const points=workPlans().flatMap(p=>p.points.filter(v=>v.circuitId===d.id));
   const match=Install.catalogue(d);
-  box.innerHTML=`${points.length?`<button class="button ghost" data-trace-floor="${kitEsc(d.id)}" type="button">Points on plan · ${points.length}</button>`:""}<details><summary>Model and rail label</summary><label class="field">Short label<input data-device-extra="printName" maxlength="60" value="${kitEsc(d.printName||"")}" placeholder="${kitEsc(d.name)}"></label><label class="field">Part number<input data-device-extra="article" maxlength="100" value="${kitEsc(d.article||"")}"></label>${match?`<small>${kitEsc(match.model)} · ${kitEsc(match.sku)} · <a href="${match.source}" target="_blank" rel="noopener">ABB catalogue</a></small><button type="button" data-article="${match.sku}">Use this ABB model</button>`:""}</details>`;
+  box.innerHTML=`${points.length?`<button class="button ghost" data-trace-floor="${kitEsc(d.id)}" type="button">Points on plan · ${points.length}</button>`:""}<details><summary>Model and rail label</summary><label class="field"><span>Short label</span><input data-device-extra="printName" maxlength="60" value="${kitEsc(d.printName||"")}" placeholder="${kitEsc(d.name)}"></label><label class="field"><span>Part number</span><input data-device-extra="article" maxlength="100" value="${kitEsc(d.article||"")}"></label>${match?`<small>${kitEsc(match.model)} · ${kitEsc(match.sku)} · <a href="${match.source}" target="_blank" rel="noopener">ABB catalogue</a></small><button type="button" data-article="${match.sku}">Use this ABB model</button>`:""}</details>`;
 }
 function traceToPlan(id){
   const levels=workPlans().filter(l=>l.points.some(p=>p.circuitId===id));
@@ -7497,39 +7451,10 @@ function traceToPlan(id){
 function markFloorPoints(){
   if(!project.floorPlan)return;
   const points=new Map(project.floorPlan.points.map(p=>[p.id,p]));
-  const backup=outageFor===project.id?Install.backup(project,project.backup):null;
   for(const n of $$("#floorCanvas [data-floor-point]")){
     const p=points.get(n.dataset.floorPoint);if(!p)continue;
     n.classList.toggle("trace-member",Boolean(tracedDevice)&&project.id===traceProject&&p.circuitId===tracedDevice&&floorCircuitId===tracedDevice);
-    n.classList.toggle("backup-off",Boolean(backup)&&!(backup.state==="available"&&backup.activePoints.has(p.id)));
-    n.classList.toggle("backup-on",Boolean(backup)&&backup.state==="available"&&backup.activePoints.has(p.id));
   }
-}
-function markBackupBoard(){
-  const on=outageFor===project.id, state=on?Install.backup(project,project.backup):null;
-  for(const n of $$(".board-device")){n.classList.toggle("backup-on",Boolean(state?.state==="available"&&state.ids.has(n.dataset.deviceId)));n.classList.toggle("backup-off",Boolean(on&&!(state?.state==="available"&&state.ids.has(n.dataset.deviceId))));}
-  $("#endBackup").classList.toggle("hidden",!on);$("#endBackup").textContent="End simulation";
-  $("#floorBackupExit").classList.toggle("hidden",!on);
-}
-function backupSettingsForm(){
-  const saved=project.backup||{}, candidates=F.branches(project,{includePlanned:false,includeExcluded:true});
-  const loads=workPlans().flatMap(f=>f.points.filter(p=>["socket","equipment","light"].includes(p.type)));
-  $("#backupSettings").innerHTML=`<div class="kit-form"><label>Source<select id="backupSource"><option value="station">Portable power station</option><option value="generator">Generator</option><option value="inverter">Inverter</option></select></label><label>Continuous source capacity, kW<input id="backupPower" type="number" min=".01" max="1000" step="any" value="${kitEsc(saved.capacityKw??2.4)}"></label></div><p>Select the backup circuits. You can set the power and on/off state of individual appliances.</p><div id="backupLoads">${candidates.map(d=>{
-    const members=loads.filter(p=>p.circuitId===d.id), active=saved.circuits?.includes(d.id);
-    return `<div class="backup-group"><label><input data-backup-circuit="${kitEsc(d.id)}" type="checkbox" ${active?"checked":""}> <b>${kitEsc(d.label)}</b> ${kitEsc(d.name)} · ${d.load??"?"} kW</label>${members.length?`<details><summary>Appliances · ${members.length}</summary><label><input type="checkbox" data-backup-custom="${kitEsc(d.id)}" ${saved.custom?.includes(d.id)?"checked":""}> Use individual appliance loads</label>${members.map(p=>`<label class="backup-load"><input type="checkbox" data-backup-point="${kitEsc(p.id)}" ${saved.loads?.[p.id]?.on?"checked":""}>${kitEsc(p.label)} · ${kitEsc(p.name)}<input type="number" step="any" min="0" max="1000" placeholder="kW" aria-label="kW" data-backup-kw="${kitEsc(p.id)}" value="${kitEsc(saved.loads?.[p.id]?.kw??"")}"></label>`).join("")}</details>`:""}</div>`;
-  }).join("")}</div><p id="backupOutcome" aria-live="polite"></p><button id="backupRun" class="button primary" type="button">Show on plan and panel</button>`;
-  $("#backupSource").value=saved.source||"station";
-  function read(){
-    const settings={capacityKw:$("#backupPower").valueAsNumber,source:$("#backupSource").value,circuits:$$("[data-backup-circuit]:checked").map(n=>n.dataset.backupCircuit),custom:$$("[data-backup-custom]:checked").map(n=>n.dataset.backupCustom),loads:{}};
-    const inputs=new Map($$("[data-backup-kw]").map(n=>[n.dataset.backupKw,n]));
-    for(const n of $$("[data-backup-point]")){const kw=inputs.get(n.dataset.backupPoint).valueAsNumber;if(n.checked||Number.isFinite(kw))settings.loads[n.dataset.backupPoint]={on:n.checked,kw:Number.isFinite(kw)?kw:null};}
-    return settings;
-  }
-  function update(){const state=Install.backup(project,read());$("#backupOutcome").textContent=`${state.state==="unknown"?"Enter the missing power ratings":state.state==="overload"?"Source overloaded":"Within source capacity"} · ${number(state.kw)} / ${number(state.capacity)} kW`;$("#backupOutcome").classList.toggle("outage-warning",state.state!=="available");}
-  $("#backupSettings").oninput=update;update();
-  $("#backupRun").onclick=()=>{const s=read();if(!$("#backupPower").reportValidity()||!Number.isFinite(s.capacityKw)||!s.circuits.length){toast("Select backup circuits and enter the source capacity","error");return;}
-    snapshot();project.backup=s;outageFor=project.id;persistProject();$("#backupDialog").classList.add("hidden");renderAll();};
-  openModal("#backupDialog");
 }
 function makeClientSnapshot(){
   return {v:1,title:project.name,date:new Date().toISOString(),rails:Install.labelStrips(project),levels:workPlans().map(plan=>{
@@ -7547,7 +7472,7 @@ function saveShareHistory(items){localStorage.setItem(shareHistoryKey(),JSON.str
 function showSharing(content){
   const projectId=project.id;const viewer=new URL("viewer.html",location.href);viewer.searchParams.set("lang",document.documentElement.lang);
   const published=loadShareHistory();
-  content.innerHTML=`<p>The client will see a snapshot of the plan, point heights and panel labels.</p><button type="button" class="button primary" id="shareCreate">Create link</button><p id="shareMode" aria-live="polite"></p><div id="shareResult" hidden><input readonly id="shareUrl" aria-label="Link"><button class="button ghost" id="shareCopy">Copy</button></div><div id="managedShares">${published.map(s=>`<div class="managed-share"><span>${kitEsc(formatDate(s.date))}</span><a href="${kitEsc(viewer.href+"&id="+encodeURIComponent(s.id))}" target="_blank" rel="noopener">View</a><button type="button" data-revoke="${kitEsc(s.id)}">Revoke</button></div>`).join("")}</div>`;
+  content.innerHTML=`<p>The client will see a snapshot of the plan, point heights and panel labels.</p><button type="button" class="button primary" id="shareCreate">Create link</button><p id="shareMode" aria-live="polite"></p><div id="shareResult" class="share-fields" hidden><input readonly id="shareUrl" aria-label="Link"><button class="button ghost" id="shareCopy">Copy</button></div><div id="managedShares">${published.map(s=>`<div class="managed-share"><span>${kitEsc(formatDate(s.date))}</span><a href="${kitEsc(viewer.href+"&id="+encodeURIComponent(s.id))}" target="_blank" rel="noopener">View</a><button type="button" data-revoke="${kitEsc(s.id)}">Revoke</button></div>`).join("")}</div>`;
   const button=$("#shareCreate"), result=$("#shareResult"), urlField=$("#shareUrl"), mode=$("#shareMode");
   const capability=location.protocol==="file:"?Promise.resolve(false):fetch(shareApi+"/capabilities",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(v=>v?.version===1).catch(()=>false);
   capability.then(managed=>{if(mode.isConnected)mode.textContent=managed?"You can revoke a server-hosted link.":"The snapshot is embedded in the link. Recipients can keep viewing this copy indefinitely.";});
@@ -7582,10 +7507,8 @@ function initWorkspaceTools(){
   $("#storeyAdd").onclick=()=>{try{if(pendingFloorForms().length){reviewFloorDrafts();return;}const next=F.addLevel(project,$("#storeyName").value,$("#storeyElevation").valueAsNumber);snapshot();project=E.normalizeProject(next);resetLevelView();$("#storeyName").value="";persistProject();renderAll();}catch(e){toast(e.message,"error");}};
   $("#wireEndAllowance").onchange=e=>{if(!e.target.reportValidity()||!Number.isFinite(e.target.valueAsNumber))return;snapshot();project.wireEndAllowanceMm=e.target.valueAsNumber;persistProject();renderAll();};
   $("#riserLead").onchange=e=>{if(!e.target.reportValidity()||!Number.isFinite(e.target.valueAsNumber))return;snapshot();project.riserLeadM=e.target.valueAsNumber;if(project.floorPlan.syncWithCircuits)project=F.syncLengths(project);persistProject();renderAll();};
-  const exit=()=>{outageFor=null;renderAll();};$("#endBackup").onclick=exit;$("#floorBackupExit").onclick=exit;
   document.addEventListener("click",e=>{
-    const b=e.target.closest("[data-open-backup],[data-start],[data-trace-floor],[data-trace-board],[data-trace-sld],[data-article]");if(!b)return;
-    if(b.hasAttribute("data-open-backup")){ $("#boardToolsMenu").open=false;backupSettingsForm(); }
+    const b=e.target.closest("[data-start],[data-trace-floor],[data-trace-board],[data-trace-sld],[data-article]");if(!b)return;
     if(b.dataset.start){starterIntent=b.dataset.start;$$("[data-start]").forEach(n=>n.setAttribute("aria-pressed",String(n===b)));}
     if(b.dataset.traceFloor)traceToPlan(b.dataset.traceFloor);
     if(b.dataset.traceBoard){switchView("board");chooseDevice(b.dataset.traceBoard);if(innerWidth<=900)toggleDrawer("inspector");}
@@ -7803,7 +7726,6 @@ function renderAll() {
   renderWireReport();
   renderWiringPalette();
   renderProjectGeneration();
-  if (typeof markBackupBoard === "function") markBackupBoard();
   updateHistoryButtons(); renderProjectSaveStatus();
 }
 

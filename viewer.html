@@ -1,2 +1,28 @@
 <!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>ElectroPanel Studio</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f4f6f5;color:#1b303b;font:16px/1.45 system-ui,sans-serif}header,main{max-width:1040px;margin:auto;padding:16px}header{display:flex;align-items:center;justify-content:space-between;gap:12px}h1{font-size:1.6rem;margin:.1em 0}h2{font-size:1.1rem}small{color:#4d6268}button,select{font:inherit;background:white;color:#1b303b;border:1px solid #b8c9c7;border-radius:6px;padding:7px 10px;cursor:pointer}section{background:white;border:1px solid #d5e0db;border-radius:10px;margin-bottom:12px;padding:12px}svg{width:100%;max-height:58vh;display:block}#list,.rail{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.rail span{border-left:2px solid #88a969;padding:3px 8px}#detail{padding:10px;background:#eef5e5}circle{cursor:pointer}@media print{#print,#list{display:none}body{background:white}section{break-inside:avoid}svg{max-height:62vh}}</style><script defer src="snapshot-codec.js"></script><script defer src="viewer.js"></script></head><body><header><div><small id="stamp">ElectroPanel Studio</small><h1 id="title">ElectroPanel Studio</h1><small id="revision"></small></div><button id="print" type="button">PDF</button></header><main id="content" hidden><section><label><b id="floorTitle"></b> <select id="floor"></select></label><svg id="map" role="group"></svg><p id="detail" aria-live="polite"></p><details><summary id="pointsTitle"></summary><div id="list"></div></details></section><section><h2 id="boardTitle"></h2><div id="rails"></div></section></main></body></html>
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #12202e; background: #f5f7f8; }
+* { box-sizing: border-box; }
+body { margin: 0; font-size: 13px; line-height: 1.45; }
+header, main { width: min(1040px, 100%); margin: auto; padding: 14px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+header div { min-width: 0; }
+h1, h2 { margin: 0 0 5px; overflow-wrap: anywhere; }
+h1 { font-size: clamp(18px, 3.5vw, 25px); }
+h2 { font-size: 16px; }
+small { color: #6b7885; font-size: 11px; }
+button, select {
+  min-width: 0; min-height: 34px; max-width: 100%;
+  border: 1px solid #cbd4d9; border-radius: 7px; background: white; color: inherit;
+  padding: 4px 9px; font: inherit; font-size: 12px; cursor: pointer;
+}
+button:focus-visible, select:focus-visible { outline: 2px solid #779747; outline-offset: 1px; }
+#print { flex: none; }
+section { background: white; border: 1px solid #dfe5e8; border-radius: 10px; margin-bottom: 12px; padding: 12px; }
+section > label { display: grid; gap: 5px; max-width: 270px; margin-bottom: 10px; font-size: 11px; color: #6b7885; }
+svg { width: 100%; max-height: 58vh; display: block; }
+#list, .rail { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+#list button, .rail span, #detail { overflow-wrap: anywhere; }
+.rail span { min-width: 0; border-left: 2px solid #88a969; padding: 3px 8px; }
+#detail { padding: 8px 9px; background: #eef5e5; border-radius: 7px; }
+circle { cursor: pointer; }
+@media print { #print, #list { display: none; } body { background: white; } section { break-inside: avoid; } svg { max-height: 62vh; } }
+</style><script defer src="snapshot-codec.js"></script><script defer src="viewer.js"></script></head><body><header><div><small id="stamp">ElectroPanel Studio</small><h1 id="title">ElectroPanel Studio</h1><small id="revision"></small></div><button id="print" type="button">PDF</button></header><main id="content" hidden><section><label><b id="floorTitle"></b> <select id="floor"></select></label><svg id="map" role="group"></svg><p id="detail" aria-live="polite"></p><details><summary id="pointsTitle"></summary><div id="list"></div></details></section><section><h2 id="boardTitle"></h2><div id="rails"></div></section></main></body></html>

@@ -5,3 +5,7 @@ html[data-app-loading] .app-shell { visibility: hidden; }
 .language-switch select:focus-visible { outline: 2px solid #cbf46b; outline-offset: 2px; }
 .language-switch option { color: #e7eef4; background: #14232e; }
 @media (max-width: 600px) { .language-switch select { min-width: 56px; width: 56px; height: 32px; padding: 0 3px; font-size: 11px; } .top-actions { gap: 5px; } }
+@media (max-width: 900px) {
+  .topbar { grid-template-columns: 36px minmax(0, 1fr) max-content; gap: 6px; }
+  .project-title-wrap { padding-left: 0; }
+}

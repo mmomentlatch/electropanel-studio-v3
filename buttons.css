@@ -49,13 +49,24 @@ button > svg, label.button > svg {
 .document-toolbar { flex-wrap: wrap; row-gap: 8px; }
 .document-actions { align-items: center; flex-wrap: wrap; }
 .modal-header, .modal-footer { gap: 8px; }
-.modal-backdrop { grid-template-columns: minmax(0, 1fr); }
+.modal-backdrop { grid-template-columns: minmax(0, 1fr); padding: clamp(10px, 3vw, 20px); }
 .modal-card { min-width: 0; max-width: 100%; }
-.modal-footer { align-items: center; }
+.modal-header, .modal-footer { flex: none; }
+.modal-header > :not(button) { min-width: 0; overflow-wrap: anywhere; }
+.modal-header h2 { margin: 0; font-size: 18px; line-height: 1.25; }
+.modal-form, .modal-footer { min-width: 0; }
+.modal-footer { align-items: center; flex-wrap: wrap; }
+.modal-footer .button, .floor-tools .button, .inspector-panel .button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.modal-footer > .button { min-height: 36px; }
 .project-row-actions { align-items: center; }
 .section-title-row:has(> button) { align-items: center; }
+.section-title-row > :first-child { min-width: 0; overflow-wrap: anywhere; }
+.project-copy, .design-issue-group, .floor-selection-info { overflow-wrap: anywhere; }
 .floor-zoom button, .sld-controls button { height: 32px; min-width: 32px; }
-.sld-controls select { height: 32px; }
 .floor-export-menu > summary { justify-content: center; }
 .floor-export-menu > summary::after { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); flex: none; }
 
@@ -79,5 +90,7 @@ button > svg, label.button > svg {
 }
 @media (max-width: 600px) {
   .project-row-actions { grid-column: 2 / -1; justify-content: flex-end; flex-wrap: wrap; }
-  .modal-footer { flex-wrap: wrap; }
+  .modal-header, .modal-footer { padding: 12px; }
+  .modal-header h2 { font-size: 16px; }
+  .modal-form { padding: 12px; }
 }

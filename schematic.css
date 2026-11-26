@@ -11,7 +11,7 @@
 .sld-controls button { height: 29px; min-width: 29px; padding: 0 8px; border: 1px solid #d3dee4; border-radius: 5px; background: white; color: #435a68; font-family: inherit; font-size: 11px; cursor: pointer; }
 .sld-controls button:hover:not(:disabled) { border-color: #899fab; background: #f0f5f7; }
 .sld-controls button:disabled { opacity: .38; cursor: default; }
-.sld-controls select { height: 29px; min-width: 140px; padding: 0 9px; border: 1px solid #d3dee4; border-radius: 5px; background: white; font: inherit; font-size: 11px; color: #344d5c; }
+.sld-controls select { width: 140px; }
 #diagramZoomValue { min-width: 42px; font-size: 10px; text-align: center; color: #667c89; }
 .sld-overview { max-width: 1188px; margin: 16px auto 0; padding: 0 24px; display: flex; justify-content: space-between; gap: 15px; font-size: 10px; color: #6d818d; }
 .sld-overview > div, .sld-key, .sld-key > span { display: flex; align-items: center; gap: 9px; }
@@ -38,7 +38,7 @@
   #diagramView .document-actions .button { min-height: 32px; font-size: 10px; padding: 0 9px; }
   #diagramView .document-actions .button svg { display: none; }
   .sld-controls { position: relative; top: auto; padding: 9px 12px; gap: 7px; flex-wrap: wrap; }
-  .sld-controls select { min-width: 110px; max-width: 140px; font-size: 10px; }.sld-controls button { padding: 0 6px; font-size: 10px; }
+  .sld-controls select { width: 120px; }.sld-controls button { padding: 0 6px; font-size: 10px; }
   .sld-overview { flex-direction: column; gap: 8px; padding: 0 16px; }.sld-overview > div { flex-wrap: wrap; }
   #diagramDetails { width: calc(100% - 28px); }
 }
