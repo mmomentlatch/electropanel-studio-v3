@@ -4,9 +4,9 @@
 #diagramView { background: #e9eef1; }
 #diagramView .document-toolbar { position: sticky; top: 0; z-index: 12; background: #fff; }
 #diagramView .document-actions { gap: 7px; }
-#diagramView .document-actions .button { width: auto; padding: 0 11px; font-size: 11px; }
+#diagramView .document-actions .button { width: auto; padding: 0 8px; font-size: 11px; }
 #diagramView button[aria-pressed="true"] { background: #eef5e5; border-color: #9fbe79; color: #3d592c; }
-.sld-controls { position: sticky; top: 73px; z-index: 11; min-height: 49px; display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 8px 24px; background: #f8fafb; border-bottom: 1px solid #d5dfe5; }
+.sld-controls { position: sticky; top: var(--document-toolbar-height); z-index: 11; min-height: calc(var(--control-height) + 10px); display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 12px; background: #f8fafb; border-bottom: 1px solid #d5dfe5; }
 .sld-pages-control, .sld-zoom-control { display: flex; align-items: center; gap: 6px; }
 .sld-controls button { height: 29px; min-width: 29px; padding: 0 8px; border: 1px solid #d3dee4; border-radius: 5px; background: white; color: #435a68; font-family: inherit; font-size: 11px; cursor: pointer; }
 .sld-controls button:hover:not(:disabled) { border-color: #899fab; background: #f0f5f7; }
@@ -35,7 +35,7 @@
 .sld-warning { padding: 11px 14px; margin-top: 12px; background: #fff8eb; border: 1px solid #e7d6b6; border-radius: 6px; color: #896b3a; }.sld-warning ul { margin: 7px 0 0; padding-left: 17px; }
 @media (max-width: 760px) {
   #diagramView .document-toolbar { flex-wrap: wrap; gap: 12px; padding: 14px; position: relative; }
-  #diagramView .document-actions .button { min-height: 32px; font-size: 10px; padding: 0 9px; }
+  #diagramView .document-actions .button { min-height: var(--control-height); font-size: 10px; padding: 0 9px; }
   #diagramView .document-actions .button svg { display: none; }
   .sld-controls { position: relative; top: auto; padding: 9px 12px; gap: 7px; flex-wrap: wrap; }
   .sld-controls select { width: 120px; }.sld-controls button { padding: 0 6px; font-size: 10px; }

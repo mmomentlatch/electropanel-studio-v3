@@ -1,12 +1,12 @@
 /* Compact assembly, procurement, customer review and physical label sheets. */
 .assembly-line{display:flex;align-items:center;flex-wrap:wrap;gap:2px 8px;padding:3px 9px;background:#f7f9f5;border-bottom:1px solid var(--line)}
-.assembly-line .design-project-notice,.assembly-line .assembly-wiring-bar{border:0;background:transparent;padding:0;min-height:30px}
+.assembly-line .design-project-notice,.assembly-line .assembly-wiring-bar{border:0;background:transparent;padding:0;min-height:var(--control-height)}
 .assembly-line .assembly-wiring-bar{flex:1;justify-content:flex-end}
 .assembly-line #designNoticeButton,.assembly-line #assemblyWiringHint{display:none}
 .hint-open .assembly-line #assemblyWiringHint{display:block}
 .assembly-line .design-notice-status{max-width:220px;text-align:left;overflow:hidden;text-overflow:ellipsis}
-.assembly-line .generation-button{min-height:30px;padding:4px 9px}
-.board-tools-menu{position:relative}.board-tools-menu summary{list-style:none;cursor:pointer;padding:5px 8px;border:1px solid var(--line);border-radius:5px}
+.assembly-line .generation-button{min-height:var(--control-height);padding:4px 9px}
+.board-tools-menu{position:relative}.board-tools-menu summary{list-style:none;cursor:pointer;display:grid;place-items:center;min-height:var(--control-height);padding:3px 6px;border:1px solid var(--line);border-radius:5px}
 .board-tools-menu[open]>div{position:absolute;right:0;top:100%;background:white;z-index:30;min-width:160px;padding:9px;box-shadow:0 5px 18px #15252833;border-radius:6px}
 @media(min-width:901px){body.catalog-closed:not(.floor-mode):not(.diagram-mode):not(.report-mode) .workspace-layout{grid-template-columns:minmax(0,1fr) 285px}
 body.catalog-closed:not(.floor-mode):not(.diagram-mode):not(.report-mode) .library-panel{display:none}
@@ -22,13 +22,13 @@ body.catalog-closed.inspector-closed:not(.floor-mode):not(.diagram-mode):not(.re
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: var(--field-height);
+  min-height: var(--control-height);
   max-width: 100%;
   border: 1px solid var(--line-strong);
   border-radius: var(--field-radius);
   background: var(--surface);
   color: var(--ink);
-  padding: 5px 9px;
+  padding: 3px 8px;
   font-size: var(--field-text);
   font-weight: 650;
   cursor: pointer;
@@ -77,12 +77,12 @@ body.catalog-closed.inspector-closed:not(.floor-mode):not(.diagram-mode):not(.re
   overflow-wrap: anywhere;
 }
 .storey-summary strong { color: var(--ink); font-weight: 650; }
-#storeyPick { width: clamp(110px, 15vw, 158px); }
+#storeyPick { width: clamp(106px, 14vw, 140px); }
 .floor-svg .point.trace-member .selection-ring { stroke: #22794d; stroke-width: 2; fill: #d1edb877; }
 .trace-sld { outline: 3px solid #60943c; }
 
 .share-fields:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
-.share-fields .button { min-height: var(--field-height); }
+.share-fields .button { min-height: var(--control-height); }
 .managed-share { margin: 8px 0; }
 .kit-drawing { width: 100%; max-height: 155mm; }
 @media (max-width: 480px) {

@@ -5,11 +5,11 @@
 .template-modal-body { overflow-y: auto; padding: 0 24px 22px; }
 .template-intro { margin-bottom: 18px; font-size: 12px; line-height: 1.6; color: var(--muted); max-width: 750px; }
 .template-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
-.template-card { display: flex; flex-direction: column; gap: 9px; padding: 17px; border: 1px solid var(--line); border-radius: 12px; background: #fff; text-align: left; cursor: pointer; color: var(--ink); }
+.template-card { display: flex; flex-direction: column; gap: 7px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; text-align: left; cursor: pointer; color: var(--ink); }
 .template-card:hover { border-color: #acc789; background: #fafcf6; }
 .template-card.selected { border-color: #7ea543; box-shadow: 0 0 0 2px #c8f35a80; background: #f7fbed; }
 .template-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.template-card-top i { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: #e9f1dc; font-style: normal; font-size: 20px; font-weight: 800; color: #466127; }
+.template-card-top i { display: grid; place-items: center; width: var(--control-height); height: var(--control-height); border-radius: 9px; background: #e9f1dc; font-style: normal; font-size: 17px; font-weight: 800; color: #466127; }
 .template-card-top small { font-size: 10px; color: var(--muted); }
 .template-card > strong { font-size: 16px; }
 .template-card > span:not(.template-card-top) { font-size: 11px; color: var(--muted); line-height: 1.55; }

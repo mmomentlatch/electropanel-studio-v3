@@ -1,6 +1,6 @@
 /* Wiring workspace, terminal targets and realistic busbars. */
 .library-mode-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-bottom: 17px; border: 1px solid var(--line); border-radius: 10px; background: #f0f3ee; flex-shrink: 0; }
-.library-mode-tab { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 36px; min-width: 0; padding: 6px 4px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 11px; font-weight: 750; cursor: pointer; }
+.library-mode-tab { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: var(--control-height); min-width: 0; padding: 6px 4px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 11px; font-weight: 750; cursor: pointer; }
 .library-mode-tab svg { width: 14px; height: 14px; flex-shrink: 0; }
 .library-mode-tab:hover { color: var(--navy); background: #e5ebdf; }
 .library-mode-tab[aria-selected="true"] { background: var(--lime); color: var(--navy); box-shadow: 0 1px 3px #26321b16; }
@@ -11,7 +11,7 @@
 .insert-wire-banner strong { color: #38571e; }.insert-wire-banner span { color: #657653; }
 .insert-wire-banner button { justify-self: start; padding: 0; border: 0; background: none; color: #3b6024; text-decoration: underline; cursor: pointer; font-size: 9px; }
 .assembly-actions { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 5px; margin-top: 11px; }
-.assembly-actions button { display: inline-flex; justify-content: center; align-items: center; gap: 5px; min-height: 31px; border: 1px solid var(--line); border-radius: 7px; background: #f6f8f8; font-size: 10px; font-weight: 750; cursor: pointer; }
+.assembly-actions button { display: inline-flex; justify-content: center; align-items: center; gap: 5px; min-height: var(--control-height); border: 1px solid var(--line); border-radius: 7px; background: #f6f8f8; font-size: 10px; font-weight: 750; cursor: pointer; }
 .assembly-actions button:hover { border-color: #a7b28b; background: #f1f8e4; }
 .bar-chip { width: 8px; height: 14px; border-radius: 2px; display: inline-block; flex: none; }
 .n-chip { background: #1976df; }
@@ -105,7 +105,7 @@
 .comb-choice-heading { display: flex; align-items: center; gap: 10px; }
 .comb-choice-heading strong { font-size: 12px; }
 .comb-choice-heading output { color: var(--muted); font-size: 11px; }
-.comb-choice-heading button { margin-left: auto; font-size: 11px; min-height: 32px; }
+.comb-choice-heading button { margin-left: auto; font-size: 11px; min-height: var(--control-height); }
 .comb-choice-note { margin: 0; }
 .comb-terminal-choices { max-height: 220px; overflow-y: auto; border: 1px solid var(--line); border-radius: 7px; }
 .comb-terminal-choice { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-bottom: 1px solid var(--line); cursor: pointer; }
@@ -135,7 +135,7 @@
 #boardView.active { display: flex; flex-direction: column; }
 #boardView > .canvas { flex: 1; min-height: 0; height: auto; }
 .assembly-wiring-bar { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; padding: 9px 13px; background: #f7faf4; border-bottom: 1px solid #dce6d5; }
-.assembly-wiring-bar button { flex-shrink: 0; border: 1px solid #a9c78b; border-radius: 7px; padding: 7px 9px; background: #fff; color: #36551d; cursor: pointer; font-size: 10px; font-weight: 750; }
+.assembly-wiring-bar button { flex-shrink: 0; border: 1px solid #a9c78b; border-radius: 7px; padding: 4px 7px; background: #fff; color: #36551d; cursor: pointer; font-size: 10px; font-weight: 750; }
 .assembly-wiring-bar button[aria-pressed="true"] { color: #263c16; background: #d6efa9; }
 .assembly-wiring-bar p { margin: 0; flex: 1; min-width: 0; color: #58674e; font-size: 10px; line-height: 1.45; }
 .assembly-wiring-bar > span { color: #55634d; font-size: 10px; white-space: nowrap; }
@@ -172,7 +172,7 @@
   .canvas-stage { padding: 28px 20px; }
   .wire-mode-button { font-size: 10px !important; padding: 0 8px !important; }
   .wire-mode-button svg { width: 15px; }
-  #projectsButton { display: inline-flex; width: 32px; font-size: 0; padding: 0; }
+  #projectsButton { display: inline-flex; width: var(--control-height); font-size: 0; padding: 0; }
   .topbar { grid-template-columns: 45px minmax(70px, 1fr) 124px; }
 }
 @media (max-width: 620px) {
