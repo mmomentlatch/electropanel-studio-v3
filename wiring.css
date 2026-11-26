@@ -1,0 +1,206 @@
+/* Wiring workspace, terminal targets and realistic busbars. */
+.library-mode-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-bottom: 17px; border: 1px solid var(--line); border-radius: 10px; background: #f0f3ee; flex-shrink: 0; }
+.library-mode-tab { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 36px; min-width: 0; padding: 6px 4px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 11px; font-weight: 750; cursor: pointer; }
+.library-mode-tab svg { width: 14px; height: 14px; flex-shrink: 0; }
+.library-mode-tab:hover { color: var(--navy); background: #e5ebdf; }
+.library-mode-tab[aria-selected="true"] { background: var(--lime); color: var(--navy); box-shadow: 0 1px 3px #26321b16; }
+.library-mode-tab:focus-visible { outline: 2px solid #5e8531; outline-offset: 2px; }
+.layout-palette { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+.layout-palette > .search-field { flex-shrink: 0; }
+.insert-wire-banner { display: grid; flex-shrink: 0; gap: 5px; padding: 10px; margin-bottom: 10px; border: 1px solid #b5d28b; border-radius: 8px; background: #f1f8e7; font-size: 10px; line-height: 1.4; }
+.insert-wire-banner strong { color: #38571e; }.insert-wire-banner span { color: #657653; }
+.insert-wire-banner button { justify-self: start; padding: 0; border: 0; background: none; color: #3b6024; text-decoration: underline; cursor: pointer; font-size: 9px; }
+.assembly-actions { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 5px; margin-top: 11px; }
+.assembly-actions button { display: inline-flex; justify-content: center; align-items: center; gap: 5px; min-height: 31px; border: 1px solid var(--line); border-radius: 7px; background: #f6f8f8; font-size: 10px; font-weight: 750; cursor: pointer; }
+.assembly-actions button:hover { border-color: #a7b28b; background: #f1f8e4; }
+.bar-chip { width: 8px; height: 14px; border-radius: 2px; display: inline-block; flex: none; }
+.n-chip { background: #1976df; }
+.pe-chip { background: repeating-linear-gradient(135deg, #21854d 0 4px, #f4d83a 4px 8px); }
+.full-width { width: 100%; margin-top: 10px; }
+.form-grid > .full { grid-column: 1 / -1; }
+.check-label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.check-label input { accent-color: #4a681a; }
+.model-note { color: var(--muted); font-size: 9px; line-height: 1.5; margin-top: 8px; }
+.wire-mode-button { border: 1px solid var(--line); }
+.wire-mode-button.active { background: var(--lime); border-color: #a8cd4c; color: #24321b; }
+.wiring-palette > .assembly-actions { margin: 0 0 13px; }
+.wiring-palette { flex: 1; min-height: 0; overflow-y: auto; margin: 0 -5px; padding: 13px 5px 5px; scrollbar-width: thin; }
+.wiring-intro { border-radius: 8px; background: #f1f7e7; border: 1px solid #dce9c5; padding: 10px; margin-bottom: 12px; }
+.wiring-intro strong { display: block; font-size: 11px; margin-bottom: 4px; }
+.wiring-intro p { color: #61704b; font-size: 10px; line-height: 1.5; }
+.wire-preset { margin-bottom: 9px; }
+#cancelWireButton { width: 100%; margin: 4px 0 8px; font-size: 10px; }
+.wire-display-options { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 12px 0; margin-top: 13px; }
+.wire-filters { display: flex; flex-wrap: wrap; gap: 4px; margin: 7px 0 10px; }
+.wire-filters button { border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 5px 7px; cursor: pointer; color: var(--muted); font-size: 9px; }
+.wire-filters button.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.wiring-items { margin-top: 8px; }
+.wiring-list-heading { font-size: 9px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 750; display: flex; justify-content: space-between; padding: 12px 3px 5px; }
+.wiring-list-item { display: flex; align-items: center; width: 100%; gap: 7px; border: 1px solid transparent; border-bottom-color: #edf0f2; padding: 8px 5px; border-radius: 6px; background: transparent; cursor: pointer; text-align: left; }
+.wiring-list-item:hover, .wiring-list-item.active { background: #f4f8ec; border-color: #e0e9d0; }
+.wiring-list-item strong { font-size: 10px; font-weight: 650; }
+.wiring-list-item span { margin-left: auto; font-size: 8px; color: var(--muted); white-space: nowrap; }
+.wire-color-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 0 1px rgb(0 0 0 / 12%); flex: none; }
+.wiring-demo-button { width: 100%; margin-top: 14px; font-size: 10px; }
+
+.canvas-stage { width: max-content; min-width: 100%; min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 32px 26px; transform: none !important; }
+.board-scale-frame { position: relative; flex: none; max-width: none; max-height: none; }
+.board-shell { position: absolute; top: 0; left: 0; max-width: none; max-height: none; transform-origin: top left; }
+.wiring-surface { display: flex; align-items: stretch; position: relative; gap: 14px; padding: 34px 20px 30px; margin: 0 -20px; }
+.surface-center { width: max-content; flex: none; }
+.din-rows { gap: 16px; }
+.din-row { height: 112px; }
+.din-row::before { top: 52px; }
+.board-device { height: 104px; }
+.board-footer { padding-top: 0; }
+.busbar-zone { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px 20px; padding: 28px 0 4px; }
+#busbarTop { padding: 0 0 34px; }
+.busbar-zone.empty { display: none; }
+.busbar-zone.side-zone { width: 72px; grid-template-columns: 1fr; align-content: start; flex: none; padding-top: 0; }
+.busbar-card { padding: 8px 9px; min-width: 0; border: 1px solid #ccd4d1; border-radius: 5px; background: #f0f3f1; cursor: pointer; box-shadow: 0 2px 4px rgb(31 48 42 / 8%); position: relative; }
+.busbar-card.selected { outline: 3px solid var(--lime-strong); outline-offset: 2px; }
+.consumer-zone { margin: 0 0 24px; padding: 14px 8px 8px; border: 1px dashed #aebbc2; border-radius: 5px; background: #f3f6f8; }
+.consumer-zone-caption { margin-bottom: 17px; color: #647884; font-size: 8px; font-weight: 750; letter-spacing: .04em; }
+.consumer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 12px; }
+.row-consumers { display: grid; margin-top: 32px; align-items: stretch; }
+.consumer-card { min-width: 0; min-height: 33px; margin: 0 2px; padding: 11px 2px 4px; border: 1px solid #ccd7de; border-radius: 4px; background: #f9fbfc; color: #334c5d; text-align: center; }
+.consumer-card strong { display: block; white-space: normal; overflow-wrap: anywhere; font-size: 7.5px; line-height: 1.25; }.consumer-card small { display: block; margin-top: 3px; font-size: 6.5px; color: #72818b; }
+.busbar-card.long-bar { grid-column: 1 / -1; }
+.busbar-caption { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; font-size: 9px; }
+.busbar-caption strong { color: #254a71; white-space: nowrap; }
+.busbar-caption span { font-size: 8px; color: var(--muted); white-space: nowrap; }
+.potential-pe .busbar-caption strong, .potential-pen .busbar-caption strong { color: #38612e; }
+.busbar-body { display: flex; align-items: center; gap: 0; }
+.busbar-mount { display: block; flex: none; width: 12px; height: 32px; border-radius: 3px; border: 1px solid #1b62b2; background: linear-gradient(90deg, #1567bb, #3d98ed 55%, #196cb8); box-shadow: inset 0 1px 1px rgb(255 255 255 / 50%); }
+.potential-pe .busbar-mount, .potential-pen .busbar-mount { background: repeating-linear-gradient(135deg, #21924e 0 6px, #f0d343 6px 12px); border-color: #6c8d36; }
+.busbar-brass { display: flex; flex: 1; min-width: 0; border-top: 1px solid #f0d58d; border-bottom: 1px solid #9a6b22; background: linear-gradient(#edcd7c, #d4a94f 34%, #c8993f 70%, #ecd087); box-shadow: 0 2px 2px rgb(55 42 14 / 20%); }
+.busbar-screw { min-width: 12px; min-height: 25px; flex: 1; display: grid; align-content: center; justify-items: center; position: relative; padding: 3px 1px; }
+.busbar-screw i { width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(ellipse at 35% 27%, #faf7df, #bfa568 57%, #6e612e 90%); border: 1px solid #8a773e; box-shadow: 0 1px 2px rgb(33 29 13 / 30%); }
+.busbar-screw i::after { content: ""; position: absolute; height: 1px; width: 7px; margin: 4px 0 0 1px; background: #655928; transform: rotate(-30deg); }
+.busbar-screw small { position: absolute; top: 100%; font-size: 6px; color: #8f8d79; }
+.busbar-screw.occupied { background: rgb(119 91 22 / 13%); }
+.vertical-bar .busbar-caption { display: grid; justify-content: center; gap: 3px; text-align: center; }
+.vertical-bar .busbar-body, .vertical-bar .busbar-brass { flex-direction: column; }
+.vertical-bar .busbar-brass { width: 27px; }
+.vertical-bar .busbar-mount { height: 12px; width: 33px; }
+.vertical-bar .busbar-screw { min-height: 24px; width: 25px; }
+.vertical-bar .busbar-screw small { left: 100%; top: 8px; }
+.din-busbar { position: absolute; top: 22px; z-index: 3; height: 67px; padding: 5px; }
+.din-busbar .busbar-caption { margin-bottom: 3px; }
+.din-busbar .busbar-caption span { font-size: 6px; }
+
+.wiring-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 8; pointer-events: none; overflow: visible; }
+.wire-path, .comb-path { pointer-events: none; cursor: pointer; }
+.wire-hit { stroke: transparent; stroke-width: 13; fill: none; pointer-events: stroke; }
+.wire-halo { stroke: #f4f7f4; stroke-opacity: .93; stroke-width: 3.3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wire-stroke { stroke-linecap: round; stroke-linejoin: round; }
+.wire-path.selected .wire-halo, .comb-path.selected .wire-halo { stroke: #b6ec45; stroke-width: 6; stroke-opacity: .9; }
+.wire-path.related:not(.selected) .wire-halo, .comb-path.related:not(.selected) .wire-halo { stroke: #b6ec45; stroke-opacity: .85; stroke-width: 5; }
+.wire-path.dimmed, .comb-path.dimmed { opacity: .18; }
+.board-device.connection-related, .busbar-card.connection-related, .consumer-card.connection-related { outline: 3px solid #299fc6; outline-offset: 2px; }
+.board-device.connection-muted, .busbar-card.connection-muted, .consumer-card.connection-muted { opacity: .4; }
+.wire-path.drop-target .wire-halo { stroke: #56b6de; stroke-opacity: 1; stroke-width: 15; }
+.wire-path:hover .wire-halo { stroke: #c9e4a0; stroke-width: 5; }
+.wire-label, .comb-label { fill: #33433a; font-family: inherit; font-size: 8px; font-weight: 750; stroke: #f6f9f2; stroke-width: 3px; paint-order: stroke; stroke-linejoin: round; pointer-events: none; }
+.comb-label { font-size: 7px; }
+.comb-choice-heading { display: flex; align-items: center; gap: 10px; }
+.comb-choice-heading strong { font-size: 12px; }
+.comb-choice-heading output { color: var(--muted); font-size: 11px; }
+.comb-choice-heading button { margin-left: auto; font-size: 11px; min-height: 32px; }
+.comb-choice-note { margin: 0; }
+.comb-terminal-choices { max-height: 220px; overflow-y: auto; border: 1px solid var(--line); border-radius: 7px; }
+.comb-terminal-choice { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.comb-terminal-choice:last-child { border-bottom: 0; }
+.comb-terminal-choice:has(input:checked) { background: var(--lime-soft); }
+.comb-terminal-choice input { flex: none; width: 16px; height: 16px; }
+.comb-terminal-choice span { display: grid; gap: 3px; min-width: 0; }
+.comb-terminal-choice strong { font-size: 11px; }
+.comb-terminal-choice small { font-size: 10px; color: var(--muted); overflow-wrap: anywhere; }
+.comb-terminal-choice.unavailable { opacity: .55; cursor: default; }
+.comb-form-error { color: #af3945; font-size: 11px; line-height: 1.5; margin: 0; }
+.comb-form-error:empty { display: none; }
+.terminal-point { pointer-events: all; cursor: crosshair; touch-action: none; user-select: none; }
+.terminal-point circle { stroke: #fff; stroke-width: 1.3; }
+.terminal-point .terminal-hit { fill: #fff; fill-opacity: .75; stroke: #637780; stroke-opacity: .6; stroke-width: 1; }
+.terminal-point text { font-family: inherit; font-size: 6px; font-weight: 800; fill: #3e5058; stroke: #f8faf5; stroke-width: 2px; paint-order: stroke; }
+.terminal-point.consumer-terminal text { font-size: 5.5px; }
+.terminal-point.incompatible { opacity: .18; }
+.terminal-point.pending .terminal-hit { fill: #d2f489; stroke: #5d8c18; stroke-width: 2; }
+.terminal-point:hover .terminal-hit, .terminal-point:focus .terminal-hit { fill: #d4f59a; stroke: #6b931e; stroke-width: 2; }
+.terminal-point.owner-selected .terminal-hit { stroke: #5c7b35; }
+.terminal-point.connection-related .terminal-hit { stroke: #168cb4; stroke-width: 2; }
+.terminal-point:focus { outline: none; }
+.wire-draft { stroke: #52892d; stroke-width: 3; stroke-dasharray: 5 4; fill: none; pointer-events: none; }
+.route-handle { pointer-events: all; fill: #d2f489; stroke: #36581c; stroke-width: 1.5; cursor: move; touch-action: none; }
+.three-pole-link { position: absolute; left: 10%; right: 10%; top: 47%; height: 9px; border-radius: 2px; background: linear-gradient(#4e5254, #1d2427); border: 1px solid #181d20; box-shadow: 0 2px 3px #0005; z-index: 2; pointer-events: none; }
+#boardView.active { display: flex; flex-direction: column; }
+#boardView > .canvas { flex: 1; min-height: 0; height: auto; }
+.assembly-wiring-bar { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; padding: 9px 13px; background: #f7faf4; border-bottom: 1px solid #dce6d5; }
+.assembly-wiring-bar button { flex-shrink: 0; border: 1px solid #a9c78b; border-radius: 7px; padding: 7px 9px; background: #fff; color: #36551d; cursor: pointer; font-size: 10px; font-weight: 750; }
+.assembly-wiring-bar button[aria-pressed="true"] { color: #263c16; background: #d6efa9; }
+.assembly-wiring-bar p { margin: 0; flex: 1; min-width: 0; color: #58674e; font-size: 10px; line-height: 1.45; }
+.assembly-wiring-bar > span { color: #55634d; font-size: 10px; white-space: nowrap; }
+.reconnect-actions { display: flex; gap: 6px; margin-top: 8px; }
+.reconnect-actions button { flex: 1; min-width: 0; font-size: 10px; padding: 0 5px; }
+.wire-address { padding: 9px; border: 1px solid #dce5d6; background: #f3f8ed; border-radius: 7px; font-size: 10px; line-height: 1.5; margin-bottom: 12px; }
+.terminal-assignment { margin-top: 13px; }
+.terminal-assignment > strong { display: block; font-size: 10px; margin-bottom: 6px; }
+.terminal-assignment > div { display: flex; align-items: start; gap: 9px; padding: 5px 0; border-bottom: 1px solid #eef1ed; font-size: 9px; color: var(--muted); }
+.terminal-assignment b { color: var(--ink); min-width: 15px; }
+.wire-table { min-width: 670px; }
+.wire-table-card { overflow-x: auto; }
+.report-section-title { padding: 12px; border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 750; }
+.schematic-note { font-size: 10px; color: var(--muted); line-height: 1.5; margin: 14px 0; }
+.schematic-unconnected { color: #8b783f; background: #fff9e9; border: 1px solid #ece0bd; padding: 10px; border-radius: 6px; font-size: 9px; line-height: 1.5; }
+.document-toolbar h2 { line-height: 1.3; }
+.modal-form { overflow-y: auto; }
+.phase-l1 { background: #80502c !important; }
+.phase-l2 { background: #24282c !important; }
+.phase-l3 { background: #8b9299 !important; }
+
+@media (max-width: 1250px) and (min-width: 901px) {
+  .workspace-layout { grid-template-columns: 242px minmax(0, 1fr) 280px; }
+  .view-tab { padding: 0 9px; font-size: 10px; }
+  .view-tab svg { width: 14px; }
+  .canvas-toolbar { gap: 3px; }
+}
+@media (max-width: 1100px) and (min-width: 901px) {
+  .view-tab { font-size: 9px; padding: 0 5px; gap: 4px; }
+  .view-tab svg { display: none; }
+  #boardSettingsButton { font-size: 0; width: 31px; }
+}
+@media (max-width: 900px) {
+  .canvas-stage { padding: 28px 20px; }
+  .wire-mode-button { font-size: 10px !important; padding: 0 8px !important; }
+  .wire-mode-button svg { width: 15px; }
+  #projectsButton { display: inline-flex; width: 32px; font-size: 0; padding: 0; }
+  .topbar { grid-template-columns: 45px minmax(70px, 1fr) 124px; }
+}
+@media (max-width: 620px) {
+  .assembly-wiring-bar { flex-wrap: wrap; padding: 7px 10px; gap: 6px 9px; }
+  .assembly-wiring-bar p { order: 3; flex-basis: 100%; }
+  .assembly-wiring-bar > span { margin-left: auto; }
+  .view-tab { font-size: 0; }
+  .view-tab svg { display: block; }
+  .wire-mode-button { font-size: 0 !important; width: 31px; }
+  .wire-mode-button svg { width: 17px; }
+  .canvas-toolbar { gap: 1px; }
+  .tool-button { width: 28px; }
+  .document-toolbar #wireCsvButton { width: auto; font-size: 10px; padding: 0 10px; }
+}
+@media print {
+  .board-device.connection-muted, .busbar-card.connection-muted, .consumer-card.connection-muted, .wire-path.dimmed, .comb-path.dimmed { opacity: 1; }
+  .board-device.connection-related, .busbar-card.connection-related, .consumer-card.connection-related { outline: none; }
+  .wire-path.related:not(.selected) .wire-halo, .comb-path.related:not(.selected) .wire-halo { stroke: #f4f7f4; stroke-width: 6.5; }
+  .assembly-wiring-bar { display: none; }
+  .app-shell { height: auto; overflow: visible; display: block; }
+  .workspace-layout { overflow: visible; }
+  .editor-area { height: auto; }
+  .drawer-backdrop, .modal-backdrop, .toast-region { display: none !important; }
+  .wire-table, .bom-table { min-width: 0; font-size: 8px; }
+  .wire-table-card { overflow: visible; }
+  .diagram-svg { min-width: 0; }
+  .diagram-paper { overflow: visible; }
+  .bom-table thead { display: table-header-group; }
+  .bom-table tr { break-inside: avoid; }
+}

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mmomentlatch.github.io/electropanel-studio-v3/sitemap.xml

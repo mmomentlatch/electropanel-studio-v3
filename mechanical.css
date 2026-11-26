@@ -1,0 +1,62 @@
+/* Shared device proportions and equipment-only assembly view. */
+#physicalViewButton { font-size: 11px; font-weight: 800; min-width: 96px; width: auto; padding: 0 8px; white-space: nowrap; }
+#physicalViewButton[aria-pressed="true"] { background: var(--lime); border-color: #a8cd4c; }
+.enclosure-info { display: grid; gap: 7px; padding: 12px; border: 1px solid #d1ddc4; border-radius: 7px; background: #f3f8ec; font-size: 11px; line-height: 1.5; color: #465a36; }
+.enclosure-info strong { color: #263f23; }.enclosure-info small { font-size: 10px; }.enclosure-info a { color: #325c2f; }
+.mounting-fields { margin: 6px 0; border: 1px solid var(--line); padding: 11px; border-radius: 7px; font-size: 11px; }
+.mounting-fields summary { cursor: pointer; font-weight: 750; }.mounting-fields .form-grid { margin-top: 13px; }
+.field input:disabled, .field select:disabled { color: #687978; background: #edf1ee; opacity: 1; }
+.component-copy .component-dimensions { display: block; margin-top: 4px; color: #7a897c; font-size: 8px; line-height: 1.4; }
+.mechanical-summary { font-size: 10px; line-height: 1.6; }.mechanical-summary p { color: var(--muted); margin: 6px 0; }
+.mechanical-summary details { margin-top: 10px; color: var(--muted); }.mechanical-summary summary { cursor: pointer; }
+.mechanical-summary ul { padding-left: 17px; }.mechanical-summary li { margin-bottom: 7px; }
+.mechanical-status { display: inline-block; padding: 4px 7px; background: #edf3e7; border-radius: 5px; color: #49643a; font-weight: 750; }
+.mechanical-status.error { background: #fff0ed; color: #9c4734; }.mechanical-summary .mechanical-error { color: #a24632; }
+.board-assembly-viewport { position: relative; }
+.physical-board .board-header { padding-bottom: 12px; }
+.physical-board .wiring-surface { position: absolute; display: block; padding: 0; margin: 0; box-sizing: border-box; }
+.physical-board .surface-center { position: absolute; inset: 0; width: 100%; }
+.physical-board .din-rows { position: absolute; inset: 0; display: block; }
+.physical-board .din-row-wrap { position: absolute; }
+.physical-board .rail-label { position: absolute; top: -19px; left: 0; right: 0; margin: 0; font-size: 9px; }
+.physical-board .din-row { height: var(--rail-mm-height); border-radius: 0; }
+.physical-board .din-row::before { top: calc(var(--rail-mm-center) - var(--rail-mm-band) / 2); height: var(--rail-mm-band); left: 0; right: 0; background: linear-gradient(#a6afad 0 5%, #e4e9e7 5% 16%, #c5cdca 16% 84%, #e4e9e7 84% 94%, #969f9b 94%); }
+.physical-board .board-device { border-radius: 2px; }
+.physical-board .device-photo-layer img { transform: none; object-fit: fill; }
+.physical-board .device-ident { top: 8px; }.physical-board .device-ident strong { font-size: 8px; }.physical-board .device-ident small { font-size: 6.5px; }
+.physical-board .device-circuit-label { font-size: 6.5px; bottom: 6px; }
+.physical-board .row-consumers { position: absolute; left: 0; right: 0; top: calc(var(--rail-mm-height) + 17px); margin: 0; }
+.physical-board .consumer-card { background: #f7fafbcc; min-height: 31px; padding-top: 8px; }
+.physical-board .module-number { font-size: 8px; }
+.physical-board .busbar-zone { position: absolute; inset: 0; padding: 0 !important; width: auto; display: block; pointer-events: none; }
+.physical-board .busbar-zone.empty { display: none; }
+.physical-board .busbar-zone .busbar-card { position: absolute; pointer-events: auto; z-index: 3; }
+.physical-board .unmeasured-busbar { border-style: dashed; opacity: .87; }
+.physical-board .unmeasured-busbar .busbar-body { height: 30px; }.physical-board .unmeasured-busbar .busbar-mount { height: 30px; }
+.physical-board .sized-busbar { padding: 0; background: transparent; border: 0; }
+.physical-board .sized-busbar .busbar-body, .physical-board .sized-busbar .busbar-mount, .physical-board .sized-busbar .busbar-brass, .physical-board .sized-busbar .busbar-screw { height: 100%; }
+.physical-board .sized-busbar .busbar-caption { position: absolute; bottom: 100%; left: 0; right: 0; font-size: 8px; margin-bottom: 5px; }
+.physical-board .vertical-bar .busbar-body { height: calc(100% - 43px); }
+.physical-board .sized-busbar.vertical-bar .busbar-body { height: 100%; }
+.physical-board .vertical-bar .busbar-mount { height: 12px; }
+.physical-board .vertical-bar .busbar-brass { min-height: 0; height: auto; }
+.physical-board .vertical-bar .busbar-screw { min-height: 0; height: auto; padding-block: 1px; }
+.physical-board .board-footer { padding-top: 14px; }
+.physical-board #consumerZone { position: absolute; top: 100%; left: 0; }
+@media (max-width: 900px) { .enclosure-info { font-size: 10px; } }
+
+/* Equipment only: no enclosure card, outline, background or empty chambers. */
+.board-shell.assembly-board, .board-shell.assembly-board:focus-within { padding: 0; border: 0; border-radius: 0; outline: 0; background: transparent; box-shadow: none; }
+.assembly-board .board-header { padding: 0 0 12px; }
+.assembly-board .board-assembly-viewport { outline: 0; border-radius: 0; box-shadow: none; }
+.assembly-board .board-assembly-viewport::before { display: none; }
+.assembly-board .wiring-surface { border: 0; border-radius: 0; outline: 0; background: transparent; box-shadow: none; }
+.assembly-board .din-row { background-color: transparent; border: 0; outline: 0; box-shadow: none; }
+.assembly-board .board-meta span { background: #f9fcf8; }
+.assembly-board .board-footer { padding-top: 12px; }
+.capacity-info { color: #5e705b; font-size: 11px; line-height: 1.5; padding: 10px 12px; border-radius: 6px; background: #f0f6e9; }
+.optional-enclosure { background: #f8faf7; }
+
+/* Photo housings occupy their full height; transparent source margins are cropped. */
+.physical-board .board-device.photo-device { border: 0; background: transparent; box-shadow: none; }
+.physical-board .board-device.photo-device:hover { box-shadow: none; }

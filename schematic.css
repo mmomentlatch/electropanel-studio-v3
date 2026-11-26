@@ -1,0 +1,53 @@
+/* A drawing desk with readable sheets, separate from the assembly canvas. */
+.diagram-mode.diagram-expanded .workspace-layout { grid-template-columns: minmax(0, 1fr); }
+.diagram-mode.diagram-expanded .library-panel, .diagram-mode.diagram-expanded .inspector-panel { display: none; }
+#diagramView { background: #e9eef1; }
+#diagramView .document-toolbar { position: sticky; top: 0; z-index: 12; background: #fff; }
+#diagramView .document-actions { gap: 7px; }
+#diagramView .document-actions .button { width: auto; padding: 0 11px; font-size: 11px; }
+#diagramView button[aria-pressed="true"] { background: #eef5e5; border-color: #9fbe79; color: #3d592c; }
+.sld-controls { position: sticky; top: 73px; z-index: 11; min-height: 49px; display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 8px 24px; background: #f8fafb; border-bottom: 1px solid #d5dfe5; }
+.sld-pages-control, .sld-zoom-control { display: flex; align-items: center; gap: 6px; }
+.sld-controls button { height: 29px; min-width: 29px; padding: 0 8px; border: 1px solid #d3dee4; border-radius: 5px; background: white; color: #435a68; font-family: inherit; font-size: 11px; cursor: pointer; }
+.sld-controls button:hover:not(:disabled) { border-color: #899fab; background: #f0f5f7; }
+.sld-controls button:disabled { opacity: .38; cursor: default; }
+.sld-controls select { height: 29px; min-width: 140px; padding: 0 9px; border: 1px solid #d3dee4; border-radius: 5px; background: white; font: inherit; font-size: 11px; color: #344d5c; }
+#diagramZoomValue { min-width: 42px; font-size: 10px; text-align: center; color: #667c89; }
+.sld-overview { max-width: 1188px; margin: 16px auto 0; padding: 0 24px; display: flex; justify-content: space-between; gap: 15px; font-size: 10px; color: #6d818d; }
+.sld-overview > div, .sld-key, .sld-key > span { display: flex; align-items: center; gap: 9px; }
+.sld-overview strong { font-size: 10px; color: #4b626e; font-weight: 650; }
+.sld-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #6b966e; }
+.sld-key { flex-shrink: 0; }.sld-key > span { gap: 5px; }
+.sld-key i { width: 6px; height: 6px; border-radius: 2px; }.key-mcb { background: #334f5d; }.key-rcd { background: #17808d; }.key-rcbo { background: #a66a20; }
+#diagramPaper { min-height: 0; width: max-content; max-width: none; margin: 18px auto 22px; padding: 0; border: 0; background: transparent; box-shadow: none; overflow: visible; }
+.sld-page { display: none; width: max-content; box-shadow: 0 2px 5px #1a344315, 0 16px 35px #24445714; }
+.sld-page.active { display: block; }
+.sld-svg { display: block; background: #fff; max-width: none; }
+.sld-node[role="button"] { cursor: pointer; }
+.sld-node[role="button"]:hover > rect, .sld-node[role="button"]:focus > rect { fill: #d6e8f340; stroke: #8aa8bc; stroke-width: 1px; stroke-dasharray: 3 3; }
+#diagramDetails { width: min(1188px, calc(100% - 48px)); margin: 0 auto 40px; font-size: 11px; line-height: 1.6; }
+.sld-reading-note { color: #6a7f8b; margin: 13px 0; font-size: 10px; }
+.sld-extra { border: 1px solid #cfdce3; border-radius: 7px; background: #f7fafb; padding: 11px 14px; margin: 9px 0; }
+.sld-extra summary { cursor: pointer; font-weight: 650; color: #456171; }
+.sld-extra p { color: #728690; margin: 10px 0; font-size: 10px; }
+.sld-omitted { display: flex; flex-wrap: wrap; gap: 7px; }.sld-omitted button { padding: 6px 9px; border: 1px solid #c5d5df; background: #fff; border-radius: 5px; color: #436174; font: inherit; cursor: pointer; }
+.sld-connection-scroll { overflow-x: auto; }.sld-extra table { width: 100%; border-collapse: collapse; font-size: 10px; }.sld-extra th, .sld-extra td { padding: 7px; text-align: left; border-bottom: 1px solid #dce5ea; white-space: nowrap; }
+.sld-warning { padding: 11px 14px; margin-top: 12px; background: #fff8eb; border: 1px solid #e7d6b6; border-radius: 6px; color: #896b3a; }.sld-warning ul { margin: 7px 0 0; padding-left: 17px; }
+@media (max-width: 760px) {
+  #diagramView .document-toolbar { flex-wrap: wrap; gap: 12px; padding: 14px; position: relative; }
+  #diagramView .document-actions .button { min-height: 32px; font-size: 10px; padding: 0 9px; }
+  #diagramView .document-actions .button svg { display: none; }
+  .sld-controls { position: relative; top: auto; padding: 9px 12px; gap: 7px; flex-wrap: wrap; }
+  .sld-controls select { min-width: 110px; max-width: 140px; font-size: 10px; }.sld-controls button { padding: 0 6px; font-size: 10px; }
+  .sld-overview { flex-direction: column; gap: 8px; padding: 0 16px; }.sld-overview > div { flex-wrap: wrap; }
+  #diagramDetails { width: calc(100% - 28px); }
+}
+@page sld { size: A4 landscape; margin: 8mm; }
+@media print {
+  #diagramView { background: white; overflow: visible !important; }
+  .sld-controls, .sld-overview, #diagramDetails { display: none !important; }
+  #diagramPaper { width: 100%; min-width: 0; margin: 0; padding: 0; }
+  .sld-page { display: flex !important; align-items: center; justify-content: center; page: sld; width: 281mm; height: 194mm; box-shadow: none; margin: 0; padding: 0; break-after: page; break-inside: avoid; }
+  .sld-page:last-child { break-after: auto; }
+  .sld-svg { width: auto !important; height: auto !important; max-width: 281mm; max-height: 194mm; }
+}

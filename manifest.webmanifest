@@ -1,0 +1,10 @@
+{
+  "name": "ElectroPanel Studio 3",
+  "short_name": "ElectroPanel 3",
+  "description": "Легкий браузерний редактор електричних щитів",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#e8edef",
+  "theme_color": "#101a24",
+  "icons": []
+}

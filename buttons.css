@@ -1,0 +1,83 @@
+/* Command geometry is shared; colours and the existing button styles stay local. */
+button:not(.board-device), label.button, .floor-export-menu > summary { line-height: 1.25; }
+#floorView button, #diagramView button, #formDraftsList button,
+.project-row-actions button, .floor-form-draft button { line-height: 1.25; }
+
+/* Zero specificity keeps contextual layouts and responsive hiding intact. */
+:where(.button, .icon-button, .tool-button, .category-tab, .add-component,
+  .assembly-actions button, .assembly-wiring-bar button, .wire-filters button,
+  .design-project-notice button, .floor-tools button, .floor-edit-modes button,
+  .floor-zoom button, .sld-controls button, .sld-omitted button,
+  .project-row-actions button, #formDraftsList button, .floor-form-draft button,
+  .canvas-hint button, .modal-close) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+button > svg, label.button > svg {
+  display: block;
+  flex: none;
+  pointer-events: none;
+}
+.button-icon { width: 16px; height: 16px; }
+.button-label { min-width: 0; }
+.button, .tool-button, .icon-button, .library-mode-tab { text-align: center; }
+.icon-button, .add-component, .modal-header > .modal-close,
+.floor-sidebar-heading button { flex-shrink: 0; padding: 0; }
+.add-component > svg { width: 14px; height: 14px; }
+.modal-close > svg, .floor-sidebar-heading button > svg { width: 16px; height: 16px; }
+.modal-close:not(.button):not(.icon-button) { width: 32px; height: 32px; }
+.canvas-hint button { width: 24px; height: 24px; padding: 0; flex: none; }
+.canvas-hint button > svg { width: 14px; height: 14px; }
+
+.top-actions > *, .toolbar-group > button, .document-actions > .button,
+.category-tab, .wire-filters button, .floor-zoom button, .sld-controls button { flex-shrink: 0; }
+.button, .tool-button.wide, .history-button, .view-tab, .library-mode-tab,
+.category-tab, .wire-filters button { white-space: nowrap; }
+.view-tabs { scrollbar-width: none; }
+.view-tabs::-webkit-scrollbar { display: none; }
+.view-tab { justify-content: center; padding-top: 2px; }
+.tab-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; min-height: 20px; padding: 0 6px; line-height: 1; font-variant-numeric: tabular-nums; }
+.category-tab, .wire-filters button { min-height: 28px; }
+.template-launcher { display: flex; align-items: center; justify-content: flex-start; gap: 7px; min-height: 36px; }
+.template-card > b { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
+.template-card b em { float: none; flex: none; }
+
+.document-toolbar { flex-wrap: wrap; row-gap: 8px; }
+.document-actions { align-items: center; flex-wrap: wrap; }
+.modal-header, .modal-footer { gap: 8px; }
+.modal-backdrop { grid-template-columns: minmax(0, 1fr); }
+.modal-card { min-width: 0; max-width: 100%; }
+.modal-footer { align-items: center; }
+.project-row-actions { align-items: center; }
+.section-title-row:has(> button) { align-items: center; }
+.floor-zoom button, .sld-controls button { height: 32px; min-width: 32px; }
+.sld-controls select { height: 32px; }
+.floor-export-menu > summary { justify-content: center; }
+.floor-export-menu > summary::after { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); flex: none; }
+
+@media (max-width: 620px) {
+  #fitButton::before { content: none; }
+  #fitButton > svg { display: block; }
+  #fitButton, .mobile-toolbar-actions .tool-button { gap: 0; }
+  .view-tab { gap: 5px; }
+  .view-tab > .button-label, #fitButton > .button-label,
+  .mobile-toolbar-actions .button-label {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}
+@media (max-width: 900px) {
+  #boardSettingsButton { gap: 0; }
+  #boardSettingsButton > .button-label {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}
+@media (max-width: 600px) {
+  .project-row-actions { grid-column: 2 / -1; justify-content: flex-end; flex-wrap: wrap; }
+  .modal-footer { flex-wrap: wrap; }
+}
