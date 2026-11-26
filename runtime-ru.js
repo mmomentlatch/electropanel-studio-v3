@@ -3372,7 +3372,8 @@
     }
     return [...rows.values()].map(row=>{
       const info=project.purchase?.[row.key]||{};
-      return {...row,sku:String(info.sku||row.sku),supplier:String(info.supplier||""),price:typeof info.price==="number"&&info.price>=0&&Number.isFinite(info.price)?info.price:null,status:["ordered","received"].includes(info.status)?info.status:"needed"};
+      const price = Number.isFinite(info.price) && info.price >= 0 && info.price <= 1e9 ? Math.round(info.price * 100) / 100 : null;
+      return {...row,sku:String(info.sku||row.sku),supplier:String(info.supplier||""),price,status:["ordered","received"].includes(info.status)?info.status:"needed"};
     });
   }
   function labelStrips(project) {
@@ -3383,7 +3384,14 @@
       return {pitch:b.pitchMm,modules:project.board.modulesPerRow,items:items.sort((a,b)=>a.slot-b.slot)};
     });
   }
-  return {esc,layout,wirePath,lengths,origins,catalogue,materials,labelStrips};
+  function purchaseLineCents(quantity, price) {
+    if (quantity == null || price == null) return null;
+    // Quantities have millimetre precision and the price field uses cents.
+    const units = BigInt(Math.round(quantity * 1000));
+    const cents = BigInt(Math.round(price * 100));
+    return Number((units * cents + 500n) / 1000n);
+  }
+  return {esc,layout,wirePath,lengths,origins,catalogue,materials,labelStrips,purchaseLineCents};
 });
 
 ;
@@ -3419,15 +3427,20 @@
     return rows.reduce((sum, row) => ({ circuits: sum.circuits + row.circuits, segments: sum.segments + row.segments, installedM: round(sum.installedM + row.installedM), reserveM: round(sum.reserveM + row.reserveM), purchaseM: round(sum.purchaseM + row.purchaseM), missing: sum.missing + row.missing }), { circuits: 0, segments: 0, installedM: 0, reserveM: 0, purchaseM: 0, missing: 0 });
   }
   function calculate(project, floorReport) {
-    const floor = floorReport === undefined ? project.floorPlan ? F.buildingReport(project) : null : floorReport;
-    const devices = new Map(F.branches(project, { includeExcluded: true }).map((d) => [d.id, d]));
+    const wholeBuilding = floorReport === undefined && Boolean(project.floorPlan);
+    const floor = wholeBuilding ? F.buildingReport(project) : floorReport ?? null;
+    const levels = wholeBuilding ? F.buildingPlans(project) : [project.floorPlan];
+    const byId = (options) => new Map(levels.flatMap(floorPlan =>
+      F.branches({ ...project, floorPlan }, options).map((device) => [device.id, device])));
+    const devices = byId({ includeExcluded: true });
     const cables = group((floor?.circuits || []).map((c) => ({ kind: "cable", ...profile(devices.get(c.deviceId) || {}), label: c.label, segments: c.legs.length, installedM: c.installedM, reserveM: c.reserveM, purchaseM: c.purchaseM, complete: !c.incomplete })));
     const measured = project.wires?.length ? I.lengths(project) : new Map();
     const wires = group((project.wires || []).map((w) => {
       const result = positive(w.lengthM) ? {m:Number(w.lengthM),origin:"measured"} : measured.get(w.id);
       return {kind:"wire",type:text(w.wireType),color:text(w.color),cores:1,section:positive(w.section)?Number(w.section):null,material:w.material==="Al"?"Al":"Cu",label:w.label,segments:1,installedM:result?.m||0,reserveM:0,purchaseM:result?.m||0,complete:result?.m>0,estimated:result?.origin==="estimated"};
     }));
-    return { hasPlan: Boolean(floor), cables, cableTotals: totals(cables), wires, wireTotals: totals(wires), profiles: F.branches(project).map((d) => ({ id: d.id, label: d.label, name: d.name, ...profile(d) })) };
+    const profiles = Array.from(byId().values(), (d) => ({ id: d.id, label: d.label, name: d.name, ...profile(d) }));
+    return { hasPlan: Boolean(floor), cables, cableTotals: totals(cables), wires, wireTotals: totals(wires), profiles };
   }
   function csvRows(report, colors = {}, { includeWires = true } = {}) {
     const rows = [], color = (key) => colors[key]?.label || key || "Не задано";
@@ -3465,8 +3478,12 @@ function renderBomCables() {
   target.innerHTML = cableSummaryMarkup(Cables.calculate(project), { settingsOpen });
 }
 function updateCableProfile(event) {
-  const input = event.target, field = input.dataset.cableField, device = project.devices.find((d) => d.id === input.dataset.cableDevice) || project.floorPlan?.circuits?.find((d) => d.id === input.dataset.cableDevice);
-  if (!device || !["cableType", "cableColor", "cableCores"].includes(field)) return;
+  const input = event.target, field = input.dataset.cableField;
+  if (!["cableType", "cableColor", "cableCores"].includes(field)) return;
+  const id = input.dataset.cableDevice;
+  const device = project.devices.find((d) => d.id === id) ||
+    F.buildingPlans(project).flatMap((plan) => plan.circuits || []).find((circuit) => circuit.id === id);
+  if (!device) return;
   const value = field === "cableCores" ? Number(input.value) : input.value.trim();
   if (field === "cableCores" && (!Number.isInteger(value) || value < 1 || value > 24)) { input.value = Cables.profile(device).cores; toast("Количество жил должно быть целым числом от 1 до 24.", "error"); return; }
   snapshot(); device[field] = value; persistProject(); renderAll();
@@ -5681,6 +5698,9 @@ function commitFloorPlan(next, keepConfirmation = false) {
     let candidate = E.normalizeProject({ ...project, floorPlan: F.normalize(next) });
     if (candidate.design?.supply) candidate.design.supply.dataConfirmed = false;
     if (candidate.floorPlan.syncWithCircuits) candidate = F.syncLengths(candidate);
+    else if (project.floorPlan?.syncWithCircuits) {
+      for (const floor of candidate.otherFloors || []) floor.syncWithCircuits = false;
+    }
     snapshot(); project = candidate; floorRouteSelection = null; completeFloorFormCommit(); persistProject(); renderAll();
     return true;
   } catch (error) { toast(error.message, "error"); return false; }
@@ -6048,7 +6068,7 @@ function initFloorPlan() {
   $("#floorShowGrid").addEventListener("change", () => { try { localStorage.setItem("electropanel-v3-floor-grid-visible", String($("#floorShowGrid").checked)); } catch { /* Visibility still works for this session. */ } renderFloorCanvas(); });
   $("#floorGeometryGrid").addEventListener("change", renderFloorCanvas);
   $("#floorGenerateButton").addEventListener("click", () => { floorSelectedId = null; floorCircuitId = ""; const reset=F.create(project,$("#floorTemplateInput").value);
-    for (const k of ["levelId","levelName","elevationM"]) if (project.floorPlan[k]!=null) reset[k]=project.floorPlan[k];
+    for (const k of ["levelId","levelName","elevationM","syncWithCircuits"]) if (project.floorPlan[k]!=null) reset[k]=project.floorPlan[k];
     commitFloorPlan(reset); });
   $("#floorUndoButton").addEventListener("click", undoFloorChange);
   $("#floorApplySettings").addEventListener("click", saveFloorSettings); $("#floorApplyRoom").addEventListener("click", saveFloorRoom); $("#floorApplyPoint").addEventListener("click", saveFloorPoint);
@@ -7359,17 +7379,28 @@ function printKit() {
 }
 function purchaseTable() {
   const rows=purchaseRows();
-  return `<div class="kit-scroll"><table class="kit-table"><thead><tr>${["Материал","Кол-во","Артикул","Поставщик","Цена, грн","Сумма, грн","Состояние"].map(k=>`<th>${k}</th>`).join("")}</tr></thead><tbody>${rows.map((r,i)=>`<tr data-purchase="${kitEsc(r.key)}"><td>${kitEsc(r.name)}</td><td>${r.qty??"—"} ${r.unit}${r.incomplete?" *":""}</td><td><input aria-label="Артикул" data-pfield="sku" maxlength="100" value="${kitEsc(r.sku)}"></td><td><input aria-label="Поставщик" data-pfield="supplier" maxlength="100" value="${kitEsc(r.supplier)}"></td><td><input aria-label="Цена, грн" type="number" min="0" step=".01" max="1000000000" data-pfield="price" value="${r.price??""}"></td><td data-line-total>${r.price!=null&&r.qty!=null?(r.price*r.qty).toFixed(2):"—"}</td><td><select aria-label="Состояние" data-pfield="status">${Object.entries(purchaseStatus).map(([k,v])=>`<option value="${k}" ${r.status===k?"selected":""}>${v}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div><p id="kitSum"></p><button class="button primary" id="kitXlsx">Скачать Excel</button>`;
+  return `<div class="kit-scroll"><table class="kit-table"><thead><tr>${["Материал","Кол-во","Артикул","Поставщик","Цена, грн","Сумма, грн","Состояние"].map(k=>`<th>${k}</th>`).join("")}</tr></thead><tbody>${rows.map((r,i)=>`<tr data-purchase="${kitEsc(r.key)}"><td>${kitEsc(r.name)}</td><td>${r.qty??"—"} ${r.unit}${r.incomplete?" *":""}</td><td><input aria-label="Артикул" data-pfield="sku" maxlength="100" value="${kitEsc(r.sku)}"></td><td><input aria-label="Поставщик" data-pfield="supplier" maxlength="100" value="${kitEsc(r.supplier)}"></td><td><input aria-label="Цена, грн" type="number" min="0" step=".01" max="1000000000" data-pfield="price" value="${r.price??""}"></td><td data-line-total>${lineAmount(r)}</td><td><select aria-label="Состояние" data-pfield="status">${Object.entries(purchaseStatus).map(([k,v])=>`<option value="${k}" ${r.status===k?"selected":""}>${v}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div><p id="kitSum"></p><button class="button primary" id="kitXlsx">Скачать Excel</button>`;
+}
+const amountCents = (row) => Install.purchaseLineCents(row.qty, row.price);
+const purchaseSum = (rows) => rows.reduce((sum, row) => sum + (amountCents(row) ?? 0), 0) / 100;
+function lineAmount(row) {
+  const cents = amountCents(row);
+  return cents === null ? "—" : money(cents / 100);
 }
 function sumPurchases() {
-  const rows=purchaseRows(),sum=rows.reduce((s,r)=>s+(r.qty??0)*(r.price??0),0);
+  const rows = purchaseRows(), sum = purchaseSum(rows);
   $("#kitSum").textContent=`${money(sum)} · ${rows.filter(r=>r.price==null).length} — ${"без цены"} · ${rows.filter(r=>r.incomplete).length} — ${"неполный метраж"}`;
 }
 function money(v){return new Intl.NumberFormat(document.documentElement.lang,{style:"currency",currency:"UAH"}).format(v);}
 function exportProcurement(){
   const rows=purchaseRows(), header=["Материал","Единица","Количество","Артикул","Поставщик","Цена, грн","Сумма, грн","Состояние","Метраж"];
-  const purchase=rows.map((r,i)=>[r.name,r.unit,r.qty,r.sku,r.supplier,r.price,{formula:`IF(COUNT(C${i+2},F${i+2})<2,"",ROUND(C${i+2}*F${i+2},2))`,value:r.price!=null&&r.qty!=null?Math.round(r.qty*r.price*100)/100:null},purchaseStatus[r.status],r.incomplete?"Неполный метраж":""]);
-  if(purchase.length) purchase.push(["Итого","","","","","",{formula:`SUM(G2:G${rows.length+1})`,value:rows.reduce((s,r)=>s+Math.round((r.qty||0)*(r.price||0)*100)/100,0)}]);
+  const purchase = rows.map((row, index) => {
+    const number = index + 2;
+    const cents = amountCents(row);
+    const total = { formula: `IF(COUNT(C${number},F${number})<2,"",ROUND(C${number}*F${number},2))`, value: cents === null ? null : cents / 100 };
+    return [row.name, row.unit, row.qty, row.sku, row.supplier, row.price, total, purchaseStatus[row.status], row.incomplete ? "Неполный метраж" : ""];
+  });
+  if(purchase.length) purchase.push(["Итого","","","","","",{formula:`SUM(G2:G${rows.length+1})`,value:purchaseSum(rows)}]);
   const sheets=[{name:"Закупка",widths:[64,12,12,24,26,15,15,20,22],rows:[header,...purchase]},{name:"Соединения",rows:[["Провод","От","До","Сечение, мм²","Цвет","Длина, м","Источник длины"],...kitWireRows().map(w=>[w.label,w.from,w.to,w.section,w.color,w.m,Install.origins[w.origin]])]}];
   if(project.floorPlan)sheets.push({name:"Кабели",rows:[["Цепь","Название","Без запаса, м","Стояк, м","Запас, м","Закупка, м"],...F.buildingReport(project).circuits.map(c=>[c.label,c.name,c.incomplete?null:c.installedM,c.riserM||0,c.incomplete?null:c.reserveM,c.incomplete?null:c.purchaseM])]});
   downloadBlob(PanelWorkbook(sheets),`${slugify(project.name)}.xlsx`,"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -7395,7 +7426,7 @@ function initKit() {
     snapshot();project.purchase||={};
     project.purchase[key]={...project.purchase[key],[k]:k==="price"?(e.target.value===""?null:e.target.valueAsNumber):e.target.value};
     persistProject();sumPurchases();
-    const r=purchaseRows().find(r=>r.key===key);e.target.closest("tr").querySelector("[data-line-total]").textContent=r.price!=null&&r.qty!=null?(r.price*r.qty).toFixed(2):"—";
+    const r=purchaseRows().find(r=>r.key===key);e.target.closest("tr").querySelector("[data-line-total]").textContent=lineAmount(r);
   });
 }
 
@@ -8119,9 +8150,10 @@ function getBomRows() {
     grouped.get(key).count += 1;
   });
   project.busbars.forEach((bar) => {
-    const key = `bar|${bar.potential}|${bar.terminals}|${bar.ratedCurrent || ""}|${JSON.stringify(bar.dimensions || {})}`;
+    const modules = bar.zone === "din" ? E.busbarModules(bar, project.board) : 0;
+    const key = `bar|${bar.potential}|${bar.terminals}|${bar.ratedCurrent || ""}|${modules}|${JSON.stringify(bar.dimensions || {})}`;
     const dimensions = bar.dimensions ? ` · ${bar.dimensions.model || "Своя модель"} · ${mmText(bar.dimensions)}` : " · размеры не заданы";
-    if (!grouped.has(key)) grouped.set(key, { component: { name: `Шина ${bar.potential}, ${bar.terminals} клемм${dimensions}`, category: "Монтаж", modules: bar.zone === "din" ? E.busbarModules(bar, project.board) : 0 }, rating: bar.ratedCurrent ? `${bar.ratedCurrent} А` : "Номинал не задан", count: 0 });
+    if (!grouped.has(key)) grouped.set(key, { component: { name: `Шина ${bar.potential}, ${bar.terminals} клемм${dimensions}`, category: "Монтаж", modules }, rating: bar.ratedCurrent ? `${bar.ratedCurrent} А` : "Номинал не задан", count: 0 });
     grouped.get(key).count += 1;
   });
   project.combs.forEach((comb) => {
@@ -8143,17 +8175,15 @@ function getBomRows() {
 
 function renderBom() {
   const rows = getBomRows();
-  const totalModules = project.devices.reduce((sum, device) => sum + getComponent(device).modules, 0);
-  const categories = new Set(project.devices.map((device) => getComponent(device).category)).size;
+  const totalModules = rows.reduce((sum, row) => sum + row.component.modules * row.count, 0);
   $("#bomSummary").innerHTML = `
     <article class="bom-summary-card"><span>Аппаратов / шин / корпусов</span><strong>${project.devices.length + project.busbars.length + project.combs.length + (project.board.enclosureId || project.board.dimensions ? 1 : 0)}</strong></article>
     <article class="bom-summary-card"><span>Уникальных типов</span><strong>${rows.length}</strong></article>
     <article class="bom-summary-card"><span>Занято места</span><strong>${totalModules}<small>мод.</small></strong></article>`;
-  $("#bomTableBody").innerHTML = rows.map((row, index) => `<tr><td>${String(index + 1).padStart(2, "0")}</td><td><strong>${escapeHtml(row.component.name)}</strong><br><small>${escapeHtml(row.component.category)}</small></td><td>${escapeHtml(row.rating)}</td><td>${row.component.modules || "—"}</td><td>${row.count}</td></tr>`).join("");
+  $("#bomTableBody").innerHTML = rows.map((row, index) => `<tr><td>${String(index + 1).padStart(2, "0")}</td><td><span class="bom-item-name">${escapeHtml(row.component.name)}</span><br><small>${escapeHtml(row.component.category)}</small></td><td>${escapeHtml(row.rating)}</td><td>${row.component.modules || "—"}</td><td>${row.count}</td></tr>`).join("");
   $("#bomEmpty").classList.toggle("hidden", rows.length > 0);
   $(".bom-table").classList.toggle("hidden", rows.length === 0);
   renderBomCables();
-  void categories;
 }
 
 function number(value) {
